@@ -18,6 +18,10 @@ public:
 private slots:
     void on_actionExit_triggered();
 
+    void on_actionAbout_triggered();
+
+    void on_actionSubmit_triggered();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
