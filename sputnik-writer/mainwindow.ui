@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>407</width>
-    <height>339</height>
+    <height>376</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,7 +90,9 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="separator"/>
     <addaction name="actionSubmit"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">

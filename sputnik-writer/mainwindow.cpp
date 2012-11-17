@@ -1,6 +1,9 @@
+#include <QMessageBox>
+#include "QSettings"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "QSettings"
+
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -53,4 +56,14 @@ void MainWindow::write_settings()
     settings.setValue("Текст", ui->textEdit->toPlainText());
     settings.setValue("Телефон", ui->lineEdit_4->text());
     settings.setValue("ФИО", ui->textEdit_2->toPlainText());
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::about(this, tr("Sputnik writer"), tr("Публикация объявлений на сайт http://www.sputnik-cher.ru"));
+}
+
+void MainWindow::on_actionSubmit_triggered()
+{
+
 }
