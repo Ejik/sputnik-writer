@@ -1,4 +1,6 @@
 #include <QDebug>
+#include <QFile>
+#include <QDir>
 #include <QMessageBox>
 #include "QSettings"
 #include "mainwindow.h"
@@ -12,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    fill_combos();
+
     read_settings();
 }
 
@@ -19,16 +23,20 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
 void MainWindow::fill_combos()
 {
-    ui->combo_section->addItem("Недвижимость", QVariant(0));
-    ui->combo_section->addItem("Строительство", QVariant(1));
-    ui->combo_section->addItem("Интерьер", QVariant(2));
-    ui->combo_section->addItem("Животные, растения", QVariant(3));
-    ui->combo_section->addItem("Работа", QVariant(4));
+    ui->combo_section->clear();
+    ui->combo_heading->clear();
 
-    ui->combo_heading->addItem("Предлагаю работу", QVariant(301));
-    ui->combo_heading->addItem("Ищу работу", QVariant(305));
+    ui->combo_section->addItem(tr("Недвижимость"), QVariant(0));
+    ui->combo_section->addItem(tr("Строительство"), QVariant(1));
+    ui->combo_section->addItem(tr("Интерьер"), QVariant(2));
+    ui->combo_section->addItem(tr("Животные, растения"), QVariant(3));
+    ui->combo_section->addItem(tr("Работа"), QVariant(4));
+
+    ui->combo_heading->addItem(tr("Предлагаю работу"), QVariant(301));
+    ui->combo_heading->addItem(tr("Ищу работу"), QVariant(305));
 
 
 }
@@ -83,9 +91,9 @@ void MainWindow::on_actionSubmit_triggered()
     int cur_sec_idx = ui->combo_heading->currentIndex();
     int cur_head_idx = ui->combo_heading->currentIndex();
 
-    QMap<QString, QVariant> params;
-    params.insert("Раздел", ui->combo_section->itemData(cur_sec_idx).toInt());
-    params.insert("Рубрика", ui->combo_heading->itemData(cur_head_idx).toInt());
+    QMap<QString, QString> params;
+    params.insert("Раздел", ui->combo_section->itemData(cur_sec_idx).toString());
+    params.insert("Рубрика", ui->combo_heading->itemData(cur_head_idx).toString());
     params.insert("Ключевое", ui->lineEdit_3->text());
     params.insert("Текст", ui->textEdit->toPlainText());
     params.insert("Телефон", ui->lineEdit_4->text());
@@ -95,30 +103,44 @@ void MainWindow::on_actionSubmit_triggered()
     qDebug() << err;
 }
 
-QString MainWindow::submit(QMap<QString, QVariant> params)
+QString MainWindow::submit(QMap<QString, QString> params)
 {
     QList<QNetworkCookie> cookies;
-    cookies.append(QNetworkCookie("rub", params.value("Раздел").toInt()));
-    cookies.append(QNetworkCookie("cat", params.value("Рубрика")));
-    cookies.append(QNetworkCookie("key", params.value("Ключевое")));
-    cookies.append(QNetworkCookie("txt", params.value("Текст")));
-    cookies.append(QNetworkCookie("phone", params.value("Телефон")));
-    cookies.append(QNetworkCookie("contacts", params.value("Контакты")));
 
-    request.setUrl(QUrl("http://www.sputnik-cher.ru/add/"));
-    request.setHeader(QNetworkRequest::CookieHeader, QVariant::fromValue(cookies));
-    reply = manager.post(request, "user=lol&pass=123");
-    connect(reply, SIGNAL(readyRead()), this, SLOT(DataReady()));
-    connect(reply, SIGNAL(finished()), this, SLOT(ReplyFinished()));
+    cookies.append(QNetworkCookie("lang", "1"));
+    cookies.append(QNetworkCookie("sid", "none"));
+
+    QString request_string = "rub=" + params.value("Раздел") +
+            "&cat=" + params.value("Рубрика") +
+            "&key" + params.value("Ключевое") +
+            "&txt" + params.value("Текст")+
+            "&phone" + params.value("Телефон") +
+            "&contacts" + params.value("Контакты");
+
+    qDebug() << request_string;
+
+    QByteArray arr;
+    arr.append(request_string);
+
+    request_.setUrl(QUrl("http://www.sputnik-cher.ru/add/"));
+    request_.setHeader(QNetworkRequest::CookieHeader, QVariant::fromValue(cookies));
+    reply_ = manager_.post(request_, arr);
+    connect(reply_, SIGNAL(readyRead()), this, SLOT(DataReady()));
+    connect(reply_, SIGNAL(finished()), this, SLOT(ReplyFinished()));
 
     return "OK";
 }
 
 void MainWindow::DataReady()
 {
-    QByteArray data = reply->readAll();
+    QByteArray data = reply_->readAll();
     qDebug() << "reply " << data.size() << " bytes";
-    qDebug() << data;
+
+    QFile file(QDir::currentPath() + "/test.html");
+    file.open(QIODevice::Append);
+    file.write(data);
+    file.close();
+
 }
 
 void MainWindow::ReplyFinished()

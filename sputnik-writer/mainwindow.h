@@ -3,9 +3,13 @@
 
 #include <QMainWindow>
 #include <QMap>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
+#include <QtWebKit/QWebPage>
+#include <QtWebKit/QWebFrame>
+#include <QtWebKit/QWebElement>
+#include <QNetworkAccessManager>
+#include <QNetworkCookie>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 namespace Ui {
 class MainWindow;
@@ -42,7 +46,7 @@ private:
 
     void read_settings();
     void write_settings();
-    QString submit(QMap<QString, QVariant> params);
+    QString submit(QMap<QString, QString> params);
     void fill_combos();
 
 };
