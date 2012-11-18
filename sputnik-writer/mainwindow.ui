@@ -22,18 +22,12 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="lineEdit"/>
-    </item>
     <item row="1" column="0">
      <widget class="QLabel" name="label_2">
       <property name="text">
        <string>Выбор рубрики:</string>
       </property>
      </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="lineEdit_2"/>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="label_3">
@@ -74,6 +68,52 @@
     </item>
     <item row="5" column="1">
      <widget class="QTextEdit" name="textEdit_2"/>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="combo_section">
+      <property name="currentIndex">
+       <number>4</number>
+      </property>
+      <item>
+       <property name="text">
+        <string>Недвижимость</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Строительство</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Интерьер</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Животные, растения</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Работа</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QComboBox" name="combo_heading">
+      <item>
+       <property name="text">
+        <string>Предлагаю работу</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Ищу работу</string>
+       </property>
+      </item>
+     </widget>
     </item>
    </layout>
   </widget>

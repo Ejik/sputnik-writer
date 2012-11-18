@@ -2,6 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMap>
+#include <QtWebKit/QWebPage>
+#include <QtWebKit/QWebFrame>
+#include <QtWebKit/QWebElement>
+#include <QNetworkAccessManager>
+#include <QNetworkCookie>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 namespace Ui {
 class MainWindow;
@@ -15,6 +23,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     
+public slots:
+    void DataReady();
+    void ReplyFinished();
+
 private slots:
     void on_actionExit_triggered();
 
@@ -27,8 +39,15 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+    QNetworkAccessManager manager_;
+    QNetworkRequest request_;
+    QNetworkReply *reply_;
+
+
     void read_settings();
     void write_settings();
+    QString submit(QMap<QString, QString> params);
+    void fill_combos();
 
 };
 
