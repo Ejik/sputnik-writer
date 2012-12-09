@@ -88,7 +88,7 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_actionSubmit_triggered()
 {
 
-    int cur_sec_idx = ui->combo_heading->currentIndex();
+    int cur_sec_idx = ui->combo_section->currentIndex();
     int cur_head_idx = ui->combo_heading->currentIndex();
 
     QMap<QString, QString> params;
@@ -110,19 +110,19 @@ QString MainWindow::submit(QMap<QString, QString> params)
     cookies.append(QNetworkCookie("lang", "1"));
     cookies.append(QNetworkCookie("sid", "none"));
 
-    QString request_string = "rub=" + params.value("Раздел") +
-            "&cat=" + params.value("Рубрика") +
-            "&key" + params.value("Ключевое") +
-            "&txt" + params.value("Текст")+
-            "&phone" + params.value("Телефон") +
-            "&contacts" + params.value("Контакты");
 
-    qDebug() << request_string;
 
     QByteArray arr;
-    arr.append(request_string);
+    arr.append("a=" + params.value("Контакты"));
+    arr.append("c=" + params.value("Рубрика"));
+    arr.append("k=" + params.value("Ключевое"));
+    arr.append("p=" + params.value("Телефон"));
+    arr.append("r=" + params.value("Раздел"));
+    arr.append("t=" + params.value("Текст"));
 
-    request_.setUrl(QUrl("http://www.sputnik-cher.ru/add/"));
+    qDebug() << arr;
+
+    request_.setUrl(QUrl("http://www.sputnik-cher.ru/add/send/index.asp"));
     request_.setHeader(QNetworkRequest::CookieHeader, QVariant::fromValue(cookies));
     reply_ = manager_.post(request_, arr);
     connect(reply_, SIGNAL(readyRead()), this, SLOT(DataReady()));
@@ -145,7 +145,17 @@ void MainWindow::DataReady()
 
 void MainWindow::ReplyFinished()
 {
-
     qDebug() << "finished.";
+}
 
+void MainWindow::on_combo_section_currentIndexChanged(int index)
+{
+    QString str;
+    ui->textedit_debug->setText("Section index = " + str.setNum(index) + " Data = " + ui->combo_section->itemData(index).toString());
+}
+
+void MainWindow::on_combo_heading_currentIndexChanged(int index)
+{
+    QString str;
+    ui->textedit_debug->setText("Heading index = " + str.setNum(index) + " Data = " + ui->combo_heading->itemData(index).toString());
 }

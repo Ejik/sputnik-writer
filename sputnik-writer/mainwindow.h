@@ -34,6 +34,10 @@ private slots:
 
     void on_actionSubmit_triggered();
 
+    void on_combo_section_currentIndexChanged(int index);
+
+    void on_combo_heading_currentIndexChanged(int index);
+
 protected:
     void closeEvent(QCloseEvent *event);
 
