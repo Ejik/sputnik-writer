@@ -7,7 +7,6 @@
 #include "ui_mainwindow.h"
 
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -61,8 +60,14 @@ void MainWindow::read_settings()
 
     QSettings settings;
 
-    ui->combo_section->setCurrentIndex(settings.value("Раздел").toInt());
-    ui->combo_heading->setCurrentIndex(settings.value("Рубрика").toInt());
+    int current_index = get_combo_index_by_userdata(ui->combo_section, settings.value("Раздел").toInt());
+    if (current_index != -1)
+        ui->combo_section->setCurrentIndex(current_index);
+
+    current_index = get_combo_index_by_userdata(ui->combo_heading, settings.value("Рубрика").toInt());
+    if (current_index != -1)
+        ui->combo_heading->setCurrentIndex(current_index);
+
     ui->lineEdit_3->setText(settings.value("Ключевое").toString());
     ui->textEdit->setText(settings.value("Текст").toString());
     ui->lineEdit_4->setText(settings.value("Телефон").toString());
@@ -72,13 +77,33 @@ void MainWindow::read_settings()
 void MainWindow::write_settings()
 {
     QSettings settings;
-    settings.setValue("Раздел", ui->combo_section->currentIndex());
-    settings.setValue("Рубрика", ui->combo_heading->currentIndex());
+
+    settings.setValue("Раздел", get_combo_userdata_by_index(ui->combo_section));
+    settings.setValue("Рубрика",get_combo_userdata_by_index(ui->combo_heading));
     settings.setValue("Ключевое", ui->lineEdit_3->text());
     settings.setValue("Текст", ui->textEdit->toPlainText());
     settings.setValue("Телефон", ui->lineEdit_4->text());
     settings.setValue("Контакты", ui->textEdit_2->toPlainText());
 }
+
+QString MainWindow::get_combo_userdata_by_index(QComboBox *combo)
+{
+    int cur_idx = combo->currentIndex();
+    return combo->itemData(cur_idx).toString();
+}
+
+int MainWindow::get_combo_index_by_userdata(QComboBox *combo, int data)
+{
+    int i = 0;
+    while (i < combo->count()) {
+        int current_data = combo->itemData(i).toInt();
+        if (current_data == data)
+            return i;
+        i++;
+    }
+    return -1;
+}
+
 
 void MainWindow::on_actionAbout_triggered()
 {
@@ -86,49 +111,20 @@ void MainWindow::on_actionAbout_triggered()
 }
 
 void MainWindow::on_actionSubmit_triggered()
-{
-
-    int cur_sec_idx = ui->combo_section->currentIndex();
-    int cur_head_idx = ui->combo_heading->currentIndex();
-
+{    
     QMap<QString, QString> params;
-    params.insert("Раздел", ui->combo_section->itemData(cur_sec_idx).toString());
-    params.insert("Рубрика", ui->combo_heading->itemData(cur_head_idx).toString());
-    params.insert("Ключевое", ui->lineEdit_3->text());
-    params.insert("Текст", ui->textEdit->toPlainText());
-    params.insert("Телефон", ui->lineEdit_4->text());
-    params.insert("Контакты", ui->textEdit_2->toPlainText());
+    params.insert("Раздел", get_combo_userdata_by_index(ui->combo_section));
+    params.insert("Рубрика", get_combo_userdata_by_index(ui->combo_heading));
 
-    QString err = submit(params);
-    qDebug() << err;
-}
+    params.insert("Ключевое", ui->lineEdit_3->text().toUtf8());
+    params.insert("Текст", ui->textEdit->toPlainText().toUtf8());
+    params.insert("Телефон", ui->lineEdit_4->text().toUtf8());
+    params.insert("Контакты", ui->textEdit_2->toPlainText().toUtf8());
 
-QString MainWindow::submit(QMap<QString, QString> params)
-{
-    QList<QNetworkCookie> cookies;
-
-    cookies.append(QNetworkCookie("lang", "1"));
-    cookies.append(QNetworkCookie("sid", "none"));
-
-
-
-    QByteArray arr;
-    arr.append("a=" + params.value("Контакты"));
-    arr.append("c=" + params.value("Рубрика"));
-    arr.append("k=" + params.value("Ключевое"));
-    arr.append("p=" + params.value("Телефон"));
-    arr.append("r=" + params.value("Раздел"));
-    arr.append("t=" + params.value("Текст"));
-
-    qDebug() << arr;
-
-    request_.setUrl(QUrl("http://www.sputnik-cher.ru/add/send/index.asp"));
-    request_.setHeader(QNetworkRequest::CookieHeader, QVariant::fromValue(cookies));
-    reply_ = manager_.post(request_, arr);
+    reply_ = request_.submit(params);
     connect(reply_, SIGNAL(readyRead()), this, SLOT(DataReady()));
     connect(reply_, SIGNAL(finished()), this, SLOT(ReplyFinished()));
 
-    return "OK";
 }
 
 void MainWindow::DataReady()

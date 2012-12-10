@@ -1,4 +1,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    sputnik-writer
+    sputnik-writer \
+    update

@@ -1,15 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QComboBox>
 #include <QMainWindow>
 #include <QMap>
-#include <QtWebKit/QWebPage>
-#include <QtWebKit/QWebFrame>
-#include <QtWebKit/QWebElement>
-#include <QNetworkAccessManager>
-#include <QNetworkCookie>
-#include <QNetworkRequest>
-#include <QNetworkReply>
+#include "..\common\httprequestclass.h"
 
 namespace Ui {
 class MainWindow;
@@ -43,15 +38,14 @@ protected:
 
 private:
     Ui::MainWindow *ui;
-    QNetworkAccessManager manager_;
-    QNetworkRequest request_;
-    QNetworkReply *reply_;
-
 
     void read_settings();
-    void write_settings();
-    QString submit(QMap<QString, QString> params);
+    void write_settings();    
     void fill_combos();
+    QString get_combo_userdata_by_index(QComboBox *combo);
+    int get_combo_index_by_userdata(QComboBox *combo, int data);
+    HttpRequestClass request_;
+    QNetworkReply *reply_;
 
 };
 
